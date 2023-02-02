@@ -6,8 +6,13 @@ import os
 from tensorflow.keras.models import load_model
 
 
+#C:\Users\ADMIN\Desktop\Number Detector\number_detector.py
+os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+os.environ["SM_FRAMEWORK"] = "tf.keras"
+model=load_model('C:/Users/ADMIN/jozponawanie_liczb.h5')
 
-#model=load_model('rozponawanie_liczb.h5')
+# ustawienie ścieżki do foldera
+path = "C:/Users/ADMIN/Desktop/dokumenty/Programming-main/Number Detector/Cyfry"
 
 clear=lambda:os.system('cls')
 def detect(obraz):
@@ -23,15 +28,10 @@ def detect(obraz):
             suma = suma + 1
         if elem == maxy:
             suma_ost = suma
-    return suma_ost
-
-# def prediction(img):
-#     img=color.rgb2gray(img)
-#     img=img.reshape(784,)
-#     return img
-# print(prediction(cv2.imread("C:/Users/ADMIN/Desktop/Cyfry/1.png")).shape)
+    return (suma_ost,maxy)
 
 def menu(img=0):
+    clear()
     print('#' * 100)
     print('    1. Wyjaśnienie działania programu')
     print('    2. Wczytaj obraz')
@@ -41,18 +41,19 @@ def menu(img=0):
     print('#' * 100)
     x = int(input('    '))
     if x == 1:
+        clear()
         print(
-            'Wczytaj z wybranego foldera (Cyfry) obraz o rozmiarze 28x28, następnie wybierz "Start" i zobacz czy program przewidział twoją liczbę')
-        q = input('Wpisz "q" żeby wyjść')
+            'Wczytaj z wybranego foldera (Cyfry) obraz o rozmiarze 28x28, następnie wybierz "Start" i zobacz czy \nprogram przewidział twoją liczbę\n\n '
+            '   Folder Cyfry powinien znajdować się pod ścieżką ' + path + '\n\n')
+        q = input('Wpisz "q" żeby wyjść ')
         if q == 'q':
             clear()
             menu()
     if x == 2:
-        # ustawienie ścieżki do foldera
-        path = "C:/Users/ADMIN/Desktop/Cyfry"
+        clear()
         images = os.listdir(path)
         # wyświetlenie dostępnych plików
-        print('Lista dostępnuch plików: ')
+        print('Lista dostępnych plików: ')
         index = 0
         slownik = {}
         for elem in images:
@@ -68,17 +69,18 @@ def menu(img=0):
         clear()
         menu(img=img)
     if x == 3:
-        img = color.rgb2gray(img)
-        img = np.array((img * 255).reshape(784, ))
-        print('Przewidziana liczba to: {}'.format(detect(img)))
+        img1 = color.rgb2gray(img)
+        img1 = np.array((img1 * 255).reshape(784, ))
+        print('Przewidziana liczba to: {} na {}%'.format(detect(img1)[0],detect(img1)[1]*100))
         # pierwsze funkcja która przerobi odebrany obraz na odpowiednie rozmiary i przewidzi wynik
         # potem funckcja która pokaże jaka to liczba
-        clear()
-        menu(img=img)
+        q = input('Wpisz "q" żeby wrócić do menu: ')
+        if q == 'q':
+            menu(img=img)
     if x == 4:
         plt.imshow(img)
         plt.show()
-        q = input('Wpisz "q" żeby wrócić do menu: ')
-        if q == 'q':
-            menu()
+        menu(img=img)
+    if x == 5:
+        clear()
 menu()
